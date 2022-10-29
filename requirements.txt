@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+gunicorn
+pydantic~=1.9.0
+SQLAlchemy~=1.4.31
