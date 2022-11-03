@@ -1,12 +1,9 @@
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-# engine = create_engine("mysql://sql12530348:u7PtD9QvYv@sql12.freemysqlhosting.net")
-# meta = MetaData()
-# conn = engine.connect()
 Base = declarative_base()
 def get_session() -> Session:
-    db_connection = "mysql://sql12530348:u7PtD9QvYv@sql12.freemysqlhosting.net"
+    db_connection = "mysql://sql12530348:u7PtD9QvYv@sql12.freemysqlhosting.net/sql12530348"
     engine = create_engine(
         db_connection, echo=True, connect_args={"connect_timeout": 10}
     )

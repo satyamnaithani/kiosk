@@ -9,7 +9,7 @@ class Employee(declarative_base()):
     id: Unicode = Column(BigInteger, primary_key=True, nullable=False)
     employee_code = Column(Unicode(255))
     name = Column(Unicode(255))
-    department_id = Column(BigInteger, ForeignKey("states.id"))
+    department_id = Column(BigInteger)
     mobile = Column(Unicode(255))
     email = Column(Unicode(255))
     password = Column(Unicode(255))
