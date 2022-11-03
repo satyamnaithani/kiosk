@@ -11,4 +11,4 @@ class Department(declarative_base()):
     created_at = Column(DATETIME, server_default=text("CURRENT_TIMESTAMP"))
     updated_at = Column(DATETIME, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
 
-    employees = relationship("Employee", back_populates="department")
+    # employees = relationship("Employee", back_populates="department")
