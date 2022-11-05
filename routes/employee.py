@@ -11,35 +11,23 @@ from typing import Union
 from datetime import datetime, timedelta
 from utils import app_service
 
-employee = APIRouter()
-
-@employee.post("/login")
-async def login(payload: LoginSchema, db: Session = Depends(get_db)):
-    employee = db.query(Employee).filter(Employee.email==payload.email).first()
-
-    if not employee:
-        return {"message": "Employee not found"}
-
-    if not app_service.verify_password(payload.password, employee.password):
-        return {"message": "invalid credentials!"}
-    name = employee.name
-    jwt = await app_service.create_token(name)
-    response = {
-        "employee_code": employee.employee_code,
-        "name": name,
-        "mobile": employee.mobile,
-        "email": employee.email,
-        "type": employee.type,
-        "jwt": jwt,
+employee_route = APIRouter(
+    prefix="/v1/employee",
+    tags=["Employee"],
+    responses={
+        403: {"description": "Not Allowed"},
+        200: {"description": "Everything is ok"},
+        422: {"description": "Unprocessable Entity"},
+        409: {"description": "conflict in request params"},
     }
-    return {"message": response}
+)
 
-@employee.get("/employee")
+@employee_route.get("/")
 async def get_employees(token: str, db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     return db.query(Employee).all()
 
-@employee.post("/employee")
+@employee_route.post("/")
 async def write_data(token: str, employee: EmployeeSchema, db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     x = Employee(
@@ -56,12 +44,3 @@ async def write_data(token: str, employee: EmployeeSchema, db: Session = Depends
     db.add(x)
     db.commit()
     return {"message": "Employee Created Succesfully"}
-
-@employee.get("/departments")
-async def get_departments(token: str, db: Session = Depends(get_db)):
-    app_service.authMiddleware(token)
-    departments = db.query(Department).all()
-    response = []
-    for department in departments:
-        response.append({"id": department.id, "name": department.name})
-    return response

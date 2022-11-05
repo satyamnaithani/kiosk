@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from routes.employee import employee
-from routes.training import training
+from routes import employee_route, login_route, department_route, training_route, question_route
 from fastapi.middleware.cors import CORSMiddleware
 
 app=FastAPI()
@@ -16,6 +15,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app.include_router(employee)
-app.include_router(training)
+app.include_router(login_route)
+app.include_router(employee_route)
+app.include_router(department_route)
+app.include_router(training_route)
+app.include_router(question_route)

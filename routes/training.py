@@ -1,21 +1,28 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from config.db import get_db
-from models import Training, QuestionOption
-from schemas import TrainingQuestionSchema, TrainingSchema
+from models import Training
+from schemas import TrainingSchema
 from sqlmodel import Session
-from datetime import date
-from jose import JWTError, jwt
-from datetime import datetime
+from datetime import datetime, date
 from utils import app_service
 
-training = APIRouter()
+training_route = APIRouter(
+    prefix="/v1/trainings",
+    tags=["Trainings"],
+    responses={
+        403: {"description": "Not Allowed"},
+        200: {"description": "Everything is ok"},
+        422: {"description": "Unprocessable Entity"},
+        409: {"description": "conflict in request params"},
+    }
+)
 
-@training.get("/trainings")
+@training_route.get("/")
 async def get_trainings(token: str, db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     return db.query(Training).all()
 
-@training.post("/training")
+@training_route.post("/")
 async def create_training(token: str, payload: TrainingSchema, db:Session = Depends(get_db)):
     app_service.authMiddleware(token)
     training = Training(
@@ -29,28 +36,3 @@ async def create_training(token: str, payload: TrainingSchema, db:Session = Depe
     db.add(training)
     db.commit()
     return {"message": "Training Created Succesfully"}
-
-@training.post("/questions")
-async def write_question(token: str, questions: TrainingQuestionSchema, db: Session = Depends(get_db)):
-    app_service.authMiddleware(token)
-    for question in questions.questions:
-        x = TrainingQuestion(
-            training_id = questions.training_id,
-            question = question.question,
-            score = question.score,
-            status = question.status,
-            created_at = date.today(),
-            updated_at = date.today()
-        )
-        db.add(x)
-        db.flush()
-        db.refresh(x)
-        for question_option in question.options:
-            option = QuestionOption(
-                question_id = x.id,
-                question_option = question_option.question_option,
-                is_correct = question_option.is_correct
-            )
-        db.add(option)
-    db.commit()
-    return {"message": "Question Created Succesfully"}
