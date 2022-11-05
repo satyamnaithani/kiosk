@@ -32,3 +32,4 @@ async def create_token(name: OAuth2PasswordRequestForm = Depends()):
         data={"sub": name}, expires_delta=access_token_expires
     )
     return access_token
+
