@@ -9,7 +9,7 @@ class Training(declarative_base()):
     title = Column(Unicode(255))
     description = Column(Unicode(255))
     status = Column(Boolean)
-    min_pass_score = Column(Unicode(255))
+    min_pass_marks = Column(Unicode(255))
     
     created_at = Column(DATETIME, server_default=text("CURRENT_TIMESTAMP"))
     updated_at = Column(DATETIME, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
