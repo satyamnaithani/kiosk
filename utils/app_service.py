@@ -1,9 +1,10 @@
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from typing import Union
 from datetime import datetime, timedelta
+from jose import JWTError, jwt
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
@@ -33,3 +34,16 @@ async def create_token(name: OAuth2PasswordRequestForm = Depends()):
     )
     return access_token
 
+def authMiddleware(token):
+    try:
+        credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+        )
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        name: str = payload.get("sub")
+        if name is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception

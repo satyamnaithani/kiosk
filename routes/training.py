@@ -4,38 +4,20 @@ from models import Training, QuestionOption
 from schemas import TrainingQuestionSchema, TrainingSchema
 from sqlmodel import Session
 from datetime import date
-from passlib.context import CryptContext
 from jose import JWTError, jwt
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from typing import Union
-from datetime import datetime, timedelta
+from datetime import datetime
 from utils import app_service
 
 training = APIRouter()
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
-def authMiddleware(token, SECRET_KEY, ALGORITHM):
-    try:
-        credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-        )
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        name: str = payload.get("sub")
-        if name is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
 
 @training.get("/trainings")
 async def get_trainings(token: str, db: Session = Depends(get_db)):
-    authMiddleware(token, SECRET_KEY, ALGORITHM)
+    app_service.authMiddleware(token)
     return db.query(Training).all()
 
 @training.post("/training")
 async def create_training(token: str, payload: TrainingSchema, db:Session = Depends(get_db)):
-    authMiddleware(token, SECRET_KEY, ALGORITHM)
+    app_service.authMiddleware(token)
     training = Training(
         title = payload.title,
         description = payload.description,
@@ -49,7 +31,8 @@ async def create_training(token: str, payload: TrainingSchema, db:Session = Depe
     return {"message": "Training Created Succesfully"}
 
 @training.post("/questions")
-async def write_question(questions: TrainingQuestionSchema, db: Session = Depends(get_db)):
+async def write_question(token: str, questions: TrainingQuestionSchema, db: Session = Depends(get_db)):
+    app_service.authMiddleware(token)
     for question in questions.questions:
         x = TrainingQuestion(
             training_id = questions.training_id,
@@ -71,5 +54,3 @@ async def write_question(questions: TrainingQuestionSchema, db: Session = Depend
         db.add(option)
     db.commit()
     return {"message": "Question Created Succesfully"}
-
-   
