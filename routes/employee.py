@@ -9,12 +9,7 @@ from jose import JWTError, jwt
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from typing import Union
 from datetime import datetime, timedelta
-from fastapi.middleware.cors import CORSMiddleware
 
-origins = [
-    "http://localhost:3000",
-    "http://localhost:3001",
-]
 employee = APIRouter()
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
@@ -36,13 +31,6 @@ def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-employee.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 @employee.get("/employee")
 async def get_employees(token: str, db: Session = Depends(get_db)):
     try:
