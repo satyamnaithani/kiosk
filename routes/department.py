@@ -18,7 +18,7 @@ department_route = APIRouter(
     }
 )
 
-@department_route.get("/departments")
+@department_route.get("/")
 async def get_departments(token: str, db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     departments = db.query(Department).all()
