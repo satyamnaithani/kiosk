@@ -20,3 +20,4 @@ typing_extensions==4.4.0
 sqlmodel
 uvicorn
 gunicorn
+pymysql
