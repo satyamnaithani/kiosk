@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from config.db import get_db
-from models import Training
-from schemas import TrainingSchema
+from models import Training, QuestionAnswer
+from schemas import TrainingSchema, AssessmentSchema
 from sqlmodel import Session
 from datetime import datetime, date
 from utils import app_service
@@ -35,19 +35,28 @@ async def create_training(token: str, payload: TrainingSchema, db:Session = Depe
     )
     db.add(training)
     db.commit()
-    return {"message": "Training Created Succesfully"}
+    response = {
+        "status": 201,
+        "message": "Training Created Succesfully"
+    }
+    return response
 
-@training_route.post("/assesment")
-async def create_training(token: str, payload: TrainingSchema, db:Session = Depends(get_db)):
+@training_route.post("/assessment")
+async def submit_assessment(token: str, payload: AssessmentSchema, db:Session = Depends(get_db)):
     employee_id = app_service.authMiddleware(token)
-    # training = Training(
-    #     title = payload.title,
-    #     description = payload.description,
-    #     status = payload.status,
-    #     min_pass_marks = payload.min_pass_marks,
-    #     created_at = date.today(),
-    #     updated_at = date.today()
-    # )
-    # db.add(training)
-    # db.commit()
-    return employee_id
+    assessment = []
+    for ques in payload.assessment:
+        question_answer = QuestionAnswer(
+            question_id = ques.question_id,
+            answer_id = ques.option_id,
+            employee_id = employee_id,
+            created_at = date.today()
+        )
+        assessment.append(question_answer)
+    db.bulk_save_objects(assessment)
+    db.commit()
+    response = {
+        "status": 201,
+        "message": "Assesment Submitted Succesfully"
+    }
+    return response

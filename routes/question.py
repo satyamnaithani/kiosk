@@ -43,9 +43,10 @@ async def get_questions(token: str, training_id: int, db: Session = Depends(get_
 @question_route.post("/")
 async def write_question(token: str, questions: TrainingQuestionSchema, db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
+    training_id = questions.training_id
     for question in questions.questions:
         x = TrainingQuestion(
-            training_id = questions.training_id,
+            training_id = training_id,
             question = question.question,
             score = question.score,
             status = question.status,
@@ -55,12 +56,14 @@ async def write_question(token: str, questions: TrainingQuestionSchema, db: Sess
         db.add(x)
         db.flush()
         db.refresh(x)
+        questions = []
         for question_option in question.options:
             option = QuestionOption(
                 question_id = x.id,
                 question_option = question_option.question_option,
                 is_correct = question_option.is_correct
             )
-            db.add(option)
+            questions.append(option)
+        db.bulk_save_objects(questions)
     db.commit()
     return {"message": "Question Created Succesfully"}
