@@ -31,11 +31,12 @@ async def login(payload: LoginSchema, db: Session = Depends(get_db)):
 
     if not app_service.verify_password(payload.password, employee.password):
         return {"message": "invalid credentials!"}
-    name = employee.name
-    jwt = await app_service.create_token(name)
+    employee_id = employee.id
+    jwt = await app_service.create_token(employee_id)
     response = {
         "employee_code": employee.employee_code,
-        "name": name,
+        "employee_id": employee.id,
+        "name": employee.name,
         "mobile": employee.mobile,
         "email": employee.email,
         "type": employee.type,

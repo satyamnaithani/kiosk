@@ -36,3 +36,18 @@ async def create_training(token: str, payload: TrainingSchema, db:Session = Depe
     db.add(training)
     db.commit()
     return {"message": "Training Created Succesfully"}
+
+@training_route.post("/assesment")
+async def create_training(token: str, payload: TrainingSchema, db:Session = Depends(get_db)):
+    employee_id = app_service.authMiddleware(token)
+    # training = Training(
+    #     title = payload.title,
+    #     description = payload.description,
+    #     status = payload.status,
+    #     min_pass_marks = payload.min_pass_marks,
+    #     created_at = date.today(),
+    #     updated_at = date.today()
+    # )
+    # db.add(training)
+    # db.commit()
+    return employee_id

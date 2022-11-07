@@ -27,10 +27,10 @@ def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-async def create_token(name: OAuth2PasswordRequestForm = Depends()):
+async def create_token(employee_id):
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token: str = create_access_token(
-        data={"sub": name}, expires_delta=access_token_expires
+        data={"employee_id": employee_id}, expires_delta=access_token_expires
     )
     return access_token
 
@@ -42,8 +42,9 @@ def authMiddleware(token):
         headers={"WWW-Authenticate": "Bearer"},
         )
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        name: str = payload.get("sub")
-        if name is None:
+        employee_id: int = payload.get("employee_id")
+        if employee_id is None:
             raise credentials_exception
+        return employee_id
     except JWTError:
         raise credentials_exception
