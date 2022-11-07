@@ -1,8 +1,8 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, ForeignKey, Unicode, BigInteger, DATETIME, text
 from sqlalchemy.ext.declarative import declarative_base
-
-class Employee(declarative_base()):
+from config.db import Base
+class Employee(Base):
     __tablename__ = "employees"
 
     id: Unicode = Column(BigInteger, primary_key=True, nullable=False)

@@ -2,8 +2,9 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Column, ForeignKey, Unicode, BigInteger, DATETIME, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from config.db import Base
 
-class Department(declarative_base()):
+class Department(Base):
     __tablename__ = "departments"
 
     id: Unicode = Column(BigInteger, primary_key=True, nullable=False)

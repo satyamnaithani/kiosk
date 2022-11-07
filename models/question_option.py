@@ -2,6 +2,7 @@ from sqlalchemy import Column, ForeignKey, Unicode, BigInteger, DATETIME, Boolea
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from config.db import Base
+
 class QuestionOption(Base):
     __tablename__ = "question_options"
 
