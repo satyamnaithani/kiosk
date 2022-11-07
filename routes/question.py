@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from config.db import get_db
-from models import Training, QuestionOption
+from models import Training, QuestionOption, TrainingQuestion
 from schemas import TrainingQuestionSchema
 from sqlmodel import Session
 from datetime import date, datetime
@@ -16,6 +16,29 @@ question_route = APIRouter(
         409: {"description": "conflict in request params"},
     }
 )
+
+@question_route.get("/{training_id}")
+async def get_questions(token: str, training_id: int, db: Session = Depends(get_db)):
+    app_service.authMiddleware(token)
+    result = db.query(TrainingQuestion).filter(TrainingQuestion.training_id == training_id).all()
+    questions = []
+    for ques in result:
+        options = []
+        for op in ques.options:
+            options.append({
+                "id": op.id,
+                "option": op.question_option
+            })
+        questions.append({
+            "id": ques.id,
+            "question": ques.question,
+            "options": options,
+        })
+    response = {
+        "training": ques.training.title,
+        "questions": questions
+    }
+    return response
 
 @question_route.post("/")
 async def write_question(token: str, questions: TrainingQuestionSchema, db: Session = Depends(get_db)):
@@ -38,6 +61,6 @@ async def write_question(token: str, questions: TrainingQuestionSchema, db: Sess
                 question_option = question_option.question_option,
                 is_correct = question_option.is_correct
             )
-        db.add(option)
+            db.add(option)
     db.commit()
     return {"message": "Question Created Succesfully"}

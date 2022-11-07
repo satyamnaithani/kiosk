@@ -1,8 +1,9 @@
 from sqlalchemy import Column, ForeignKey, Unicode, BigInteger, DATETIME, Boolean, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from config.db import Base
 
-class Training(declarative_base()):
+class Training(Base):
     __tablename__ = "trainings"
 
     id: Unicode = Column(BigInteger, primary_key=True, nullable=False)
@@ -14,4 +15,4 @@ class Training(declarative_base()):
     created_at = Column(DATETIME, server_default=text("CURRENT_TIMESTAMP"))
     updated_at = Column(DATETIME, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
 
-    # training_questions = relationship("TrainingQuestions", back_populates="question")
+    training_questions = relationship("TrainingQuestion", back_populates="training")
