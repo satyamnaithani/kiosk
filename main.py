@@ -7,6 +7,8 @@ app=FastAPI()
 origins = [
     "http://localhost:3000",
     "http://localhost:3001",
+    "https://main--moonlit-starship-41aec0.netlify.app/",
+    "*"
 ]
 app.add_middleware(
     CORSMiddleware,
