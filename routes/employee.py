@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from config.db import get_db
 from models import Employee, Department
-from schemas import EmployeeSchema, LoginSchema, Token
+from schemas import EmployeeSchema, LoginSchema, Token, EmployeeUpdateSchema
 from sqlmodel import Session
 from datetime import date
 from passlib.context import CryptContext
@@ -61,14 +61,13 @@ async def create_employee(token: str, employee: EmployeeSchema, db: Session = De
     }
     return response
 @employee_route.patch("/{employee_id}")
-async def update_employee(token: str, employee_id: int, employee: EmployeeSchema, db: Session = Depends(get_db)):
+async def update_employee(token: str, employee_id: int, employee: EmployeeUpdateSchema, db: Session = Depends(get_db)):
     app_service.authMiddleware((token))
     update_employee = {
         Employee.name: employee.name,
         Employee.department_id: employee.department_id,
         Employee.mobile: employee.mobile,
         Employee.email: employee.email,
-        Employee.password: app_service.get_password_hash(employee.password),
         Employee.type: employee.type,
         Employee.is_hod: employee.is_hod,
         Employee.updated_at: date.today()
