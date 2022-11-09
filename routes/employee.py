@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from config.db import get_db
 from models import Employee, Department
-from schemas import EmployeeSchema, LoginSchema, Token
+from schemas import EmployeeSchema, LoginSchema, Token, EmployeeDeleteSchema
 from sqlmodel import Session
 from datetime import date
 from passlib.context import CryptContext
@@ -50,4 +50,18 @@ async def create_employee(token: str, employee: EmployeeSchema, db: Session = De
     if employee.is_hod: 
         db.query(Department).filter(Department.id == employee.department_id).update({Department.hod: x.id, Department.updated_at: date.today()}, synchronize_session = False)
     db.commit()
-    return {"message": "Employee Created Succesfully"}
+    response = {
+        "status": 201,
+        "message": "Employee Created Succesfully"
+    }
+    return response
+
+@employee_route.delete("/")
+async def delete_employee(token: str, employee_id: EmployeeDeleteSchema, db: Session = Depends(get_db)):
+    app_service.authMiddleware((token))
+    db.query(Employee).filter_by(Employee.id == employee_id).delete()
+    response = {
+        "status": 200,
+        "message": "Employee Deleted Succesfully"
+    }
+    return response

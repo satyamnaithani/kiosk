@@ -8,3 +8,6 @@ class EmployeeSchema(BaseModel):
     password: str
     type: str
     is_hod: bool
+
+class EmployeeDeleteSchema(BaseModel):
+    employee_id: int
