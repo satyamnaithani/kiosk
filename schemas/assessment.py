@@ -7,3 +7,4 @@ class Answers(BaseModel):
 
 class AssessmentSchema(BaseModel):
     assessment: List[Answers]
+    training_id: int

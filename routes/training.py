@@ -53,6 +53,7 @@ async def submit_assessment(token: str, payload: AssessmentSchema, db:Session = 
             question_id = ques.question_id,
             answer_id = ques.option_id,
             employee_id = employee_id,
+            training_id = payload.training_id,
             created_at = date.today()
         )
         assessment.append(question_answer)
