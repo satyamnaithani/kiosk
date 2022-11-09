@@ -23,7 +23,7 @@ employee_route = APIRouter(
 )
 
 @employee_route.get("/")
-async def get_employees(token: str, db: Session = Depends(get_db)):
+async def get_employee_details(token: str, db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     return db.query(Employee).all()
 
