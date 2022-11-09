@@ -81,7 +81,7 @@ async def update_employee(token: str, employee_id: int, employee: EmployeeSchema
 @employee_route.delete("/{employee_id}")
 async def delete_employee(token: str, employee_id: int, db: Session = Depends(get_db)):
     app_service.authMiddleware((token))
-    db.query(Employee).filter_by(Employee.id == employee_id).delete()
+    db.query(Employee).filter(Employee.id == employee_id).delete()
     db.commit()
     response = {
         "status": 200,
