@@ -38,6 +38,7 @@ async def write_data(token: str, employee: EmployeeSchema, db: Session = Depends
         email = employee.email,
         password =app_service.get_password_hash(employee.password),
         type = employee.type,
+        is_hod = employee.is_hod,
         created_at = date.today(),
         updated_at = date.today()
     )

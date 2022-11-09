@@ -8,3 +8,4 @@ class EmployeeSchema(BaseModel):
     email: str
     password: str
     type: str
+    is_hod: bool

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, ForeignKey, Unicode, BigInteger, DATETIME, text
+from sqlalchemy import Column, ForeignKey, Unicode, BigInteger, DATETIME, text, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from config.db import Base
 class Employee(Base):
@@ -13,6 +13,7 @@ class Employee(Base):
     email = Column(Unicode(255))
     password = Column(Unicode(255))
     type = Column(Unicode(255))  
+    is_hod = Column(Boolean)
     created_at = Column(DATETIME, server_default=text("CURRENT_TIMESTAMP"))
     updated_at = Column(DATETIME, server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"))
 
