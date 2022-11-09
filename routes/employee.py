@@ -28,11 +28,14 @@ async def get_employees(token: str, db: Session = Depends(get_db)):
     return db.query(Employee).all()
 
 @employee_route.post("/")
-async def write_data(token: str, employee: EmployeeSchema, db: Session = Depends(get_db)):
+async def create_employee(token: str, employee: EmployeeSchema, db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
+    employee_count = db.query(Employee).count()
+    name = employee.name
+    employee_code = (name[0] + name[len(name) - 1]).upper() + str(1000 + employee_count)
     x = Employee(
-        employee_code = employee.employee_code,
-        name = employee.name,
+        employee_code = employee_code,
+        name = name,
         department_id = employee.department_id,
         mobile = employee.mobile,
         email = employee.email,
@@ -43,5 +46,8 @@ async def write_data(token: str, employee: EmployeeSchema, db: Session = Depends
         updated_at = date.today()
     )
     db.add(x)
+    db.flush()
+    if employee.is_hod: 
+        db.query(Department).filter(Department.id == employee.department_id).update({Department.hod: x.id, Department.updated_at: date.today()}, synchronize_session = False)
     db.commit()
     return {"message": "Employee Created Succesfully"}
