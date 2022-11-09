@@ -5,3 +5,5 @@ from schemas.training_question import TrainingQuestionSchema
 from schemas.training import TrainingSchema
 from schemas.assessment import AssessmentSchema
 from schemas.employee import EmployeeUpdateSchema
+from schemas.hazard import HazardSchema
+from schemas.grievance import GrievanceSchema

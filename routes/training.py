@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from config.db import get_db
-from models import Training, QuestionAnswer
+from models import Training, QuestionAnswer, TrainingQuestion, QuestionOption
 from schemas import TrainingSchema, AssessmentSchema
 from sqlmodel import Session
 from datetime import datetime, date
@@ -64,3 +64,15 @@ async def submit_assessment(token: str, payload: AssessmentSchema, db:Session = 
         "message": "Assesment Submitted Succesfully"
     }
     return response
+
+# @training_route.get("/assessment/score_card/{training_id}")
+# async def submit_assessment(token: str, training_id: int, db:Session = Depends(get_db)):
+#     employee_id = app_service.authMiddleware(token)
+#     answer_sheet = db.query(QuestionAnswer.question_id, QuestionAnswer.answer_id).filter(QuestionAnswer.employee_id == employee_id, QuestionAnswer.training_id == training_id).all()
+#     correct_answers = db.query(TrainingQuestion, QuestionOption.id).filter(QuestionOption.is_correct == 1, TrainingQuestion.training_id == training_id).all()
+#     response = {
+#         "status": 200,
+#         "message": answer_sheet,
+#         "hehe": correct_answers
+#     }
+#     return response
