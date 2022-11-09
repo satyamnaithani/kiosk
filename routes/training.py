@@ -30,8 +30,8 @@ async def create_training(token: str, payload: TrainingSchema, db:Session = Depe
         description = payload.description,
         status = payload.status,
         min_pass_marks = payload.min_pass_marks,
-        start_date = format_date(payload.start_date),
-        end_date = format_date(payload.end_date),
+        start_date = app_service.format_date(payload.start_date),
+        end_date = app_service.format_date(payload.end_date),
         duration_window = payload.duration_window,
         created_at = date.today(),
         updated_at = date.today()
@@ -64,6 +64,3 @@ async def submit_assessment(token: str, payload: AssessmentSchema, db:Session = 
         "message": "Assesment Submitted Succesfully"
     }
     return response
-
-def format_date(date_str):
-    return datetime.strptime(date_str, '%d/%m/%y %H:%M:%S')

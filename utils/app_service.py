@@ -48,3 +48,6 @@ def authMiddleware(token):
         return employee_id
     except JWTError:
         raise credentials_exception
+
+def format_date(date_str):
+    return datetime.strptime(date_str, '%d/%m/%y %H:%M:%S')
