@@ -27,10 +27,16 @@ async def login(payload: LoginSchema, db: Session = Depends(get_db)):
     employee = db.query(Employee).filter(Employee.email==payload.email).first()
 
     if not employee:
-        return {"message": "Employee not found"}
+        return {
+            "status": 404,
+            "message": "Employee not found"
+        }
 
     if not app_service.verify_password(payload.password, employee.password):
-        return {"message": "invalid credentials!"}
+        return {
+            "status": 401,
+            "message": "invalid credentials!"
+        }
     employee_id = employee.id
     jwt = await app_service.create_token(employee_id)
     response = {
