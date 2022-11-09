@@ -36,6 +36,7 @@ async def get_questions(token: str, training_id: int, db: Session = Depends(get_
         })
     response = {
         "training": ques.training.title,
+        "duration_window": ques.training.duration_window,
         "questions": questions
     }
     return response
