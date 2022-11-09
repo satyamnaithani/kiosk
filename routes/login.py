@@ -39,7 +39,7 @@ async def login(payload: LoginSchema, db: Session = Depends(get_db)):
         }
     employee_id = employee.id
     jwt = await app_service.create_token(employee_id)
-    response = {
+    payload = {
         "employee_code": employee.employee_code,
         "employee_id": employee.id,
         "name": employee.name,
@@ -48,4 +48,8 @@ async def login(payload: LoginSchema, db: Session = Depends(get_db)):
         "type": employee.type,
         "jwt": jwt,
     }
-    return {"message": response}
+    response = {
+        "status": 200,
+        "message": payload
+    }
+    return response

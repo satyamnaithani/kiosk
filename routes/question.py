@@ -66,4 +66,8 @@ async def write_question(token: str, questions: TrainingQuestionSchema, db: Sess
             questions.append(option)
         db.bulk_save_objects(questions)
     db.commit()
-    return {"message": "Question Created Succesfully"}
+    response = {
+        "status": 201,
+        "message": "Question Created Succesfully"
+    }
+    return 
