@@ -49,5 +49,5 @@ def authMiddleware(token):
     except JWTError:
         raise credentials_exception
 
-def format_date(date_str):
-    return datetime.strptime(date_str, '%d/%m/%y %H:%M:%S')
+def format_date(timestamp):
+    return datetime.fromtimestamp(timestamp)
