@@ -8,6 +8,7 @@ origins = [
     "http://localhost:3000",
     "http://localhost:3001",
     "https://main--moonlit-starship-41aec0.netlify.app/",
+    "https://kiosk-x1.firebaseapp.com",
     "*"
 ]
 app.add_middleware(
