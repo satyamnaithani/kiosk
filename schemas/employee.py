@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 class EmployeeSchema(BaseModel):
     name: str
@@ -16,3 +17,7 @@ class EmployeeUpdateSchema(BaseModel):
     email: str
     type: str
     is_hod: bool
+
+class AssignTraining(BaseModel):
+    employee_id: int
+    trainings: List[int]
