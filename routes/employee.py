@@ -95,10 +95,17 @@ async def delete_employee(token: str, employee_id: int, db: Session = Depends(ge
 
 @employee_route.post("/assign_training")
 async def assign_training(token: str, payload: AssignTraining, db: Session = Depends(get_db)):
-    app_service.authMiddleware((token))
-
+    employee_id = app_service.authMiddleware((token))
+    for training_id in payload.trainings:
+        assignee = AssignTraining(
+            employee_id = employee_id,
+            training_id = training_id,
+            assigned_on = date.today()
+        )
+    db.add(assignee)
+    db.commit()
     response = {
         "status": 200,
-        "message": "Traing Assigned Succesfully"
+        "message": "Training Assigned Succesfully"
     }
     return response

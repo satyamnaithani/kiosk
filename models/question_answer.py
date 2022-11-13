@@ -10,5 +10,4 @@ class QuestionAnswer(Base):
     question_id = Column(BigInteger, ForeignKey("training_questions.id"))
     answer_id = Column(BigInteger, ForeignKey("question_options.id"))
     employee_id = Column(BigInteger, ForeignKey("employees.id"))
-    training_id = Column(BigInteger, ForeignKey("trainings.id"))
-    created_at = Column(DATETIME, server_default=text("CURRENT_TIMESTAMP"))
+    assessment_id = Column(BigInteger, ForeignKey("employee_assessments.id"))

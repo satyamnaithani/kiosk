@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from config.db import get_db
-from models import Training, QuestionAnswer, TrainingQuestion, QuestionOption
+from models import Training, QuestionAnswer, TrainingQuestion, QuestionOption, Assesment
 from schemas import TrainingSchema, AssessmentSchema
 from sqlmodel import Session
 from datetime import datetime, date
@@ -47,17 +47,24 @@ async def create_training(token: str, payload: TrainingSchema, db:Session = Depe
 @training_route.post("/assessment")
 async def submit_assessment(token: str, payload: AssessmentSchema, db:Session = Depends(get_db)):
     employee_id = app_service.authMiddleware(token)
-    assessment = []
+    assessment = Assesment(
+        employee_id = employee_id,
+        training_id = payload.training_id,
+        created_at = date.today()
+    )
+    db.add(assessment)
+    db.flush()
+
+    answers = []
     for ques in payload.assessment:
         question_answer = QuestionAnswer(
             question_id = ques.question_id,
             answer_id = ques.option_id,
             employee_id = employee_id,
-            training_id = payload.training_id,
-            created_at = date.today()
+            assessment_id = assessment.id
         )
-        assessment.append(question_answer)
-    db.bulk_save_objects(assessment)
+        answers.append(question_answer)
+    db.bulk_save_objects(answers)
     db.commit()
     response = {
         "status": 201,
@@ -65,14 +72,14 @@ async def submit_assessment(token: str, payload: AssessmentSchema, db:Session = 
     }
     return response
 
-# @training_route.get("/assessment/score_card/{training_id}")
-# async def submit_assessment(token: str, training_id: int, db:Session = Depends(get_db)):
-#     employee_id = app_service.authMiddleware(token)
-#     answer_sheet = db.query(QuestionAnswer.question_id, QuestionAnswer.answer_id).filter(QuestionAnswer.employee_id == employee_id, QuestionAnswer.training_id == training_id).all()
-#     correct_answers = db.query(TrainingQuestion, QuestionOption.id).filter(QuestionOption.is_correct == 1, TrainingQuestion.training_id == training_id).all()
-#     response = {
-#         "status": 200,
-#         "message": answer_sheet,
-#         "hehe": correct_answers
-#     }
-#     return response
+@training_route.get("/assessment/score_card/{training_id}")
+async def submit_assessment(token: str, training_id: int, db:Session = Depends(get_db)):
+    employee_id = app_service.authMiddleware(token)
+    answer_sheet = db.query(QuestionAnswer.question_id, QuestionAnswer.answer_id).filter(QuestionAnswer.employee_id == employee_id, QuestionAnswer.training_id == training_id).all()
+    correct_answers = db.query(TrainingQuestion, QuestionOption.id).filter(QuestionOption.is_correct == 1, TrainingQuestion.training_id == training_id).all()
+    response = {
+        "status": 200,
+        "message": answer_sheet,
+        "hehe": correct_answers
+    }
+    return response

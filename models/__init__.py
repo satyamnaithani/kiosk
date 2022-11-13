@@ -6,3 +6,5 @@ from models.question_option import QuestionOption
 from models.question_answer import QuestionAnswer
 from models.hazard import Hazard
 from models.grievance import Grievance
+from models.assessment import Assesment
+from models.training_assignee import TrainingAssignee
