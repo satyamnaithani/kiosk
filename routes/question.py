@@ -21,6 +21,10 @@ question_route = APIRouter(
 async def get_questions(token: str, training_id: int, db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     result = db.query(TrainingQuestion).filter(TrainingQuestion.training_id == training_id).all()
+    if len(result) == 0:
+        return {
+            "message": "No Questions Found"
+        }
     questions = []
     for ques in result:
         options = []
