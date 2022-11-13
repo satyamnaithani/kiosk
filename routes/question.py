@@ -23,6 +23,7 @@ async def get_questions(token: str, training_id: int, db: Session = Depends(get_
     result = db.query(TrainingQuestion).filter(TrainingQuestion.training_id == training_id).all()
     if len(result) == 0:
         return {
+            "status": 404,
             "message": "No Questions Found"
         }
     questions = []
