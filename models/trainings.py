@@ -10,7 +10,7 @@ class Training(Base):
     title = Column(Unicode(255))
     description = Column(Unicode(255))
     status = Column(Boolean)
-    min_pass_marks = Column(Unicode(255))
+    # min_pass_marks = Column(Unicode(255))
     start_date = Column(DATETIME)
     end_date = Column(DATETIME)
     duration_window = Column(Integer)
