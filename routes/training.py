@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends
 from config.db import get_db
 from models import Training, QuestionAnswer, TrainingQuestion, QuestionOption, Assesment
 from schemas import TrainingSchema, AssessmentSchema
 from sqlmodel import Session
 from datetime import datetime, date
 from utils import app_service
+from utils.oauth2 import oauth2_scheme
 
 training_route = APIRouter(
     prefix="/v1/trainings",
@@ -18,12 +19,12 @@ training_route = APIRouter(
 )
 
 @training_route.get("/")
-async def get_trainings(token: str = Header(None), db: Session = Depends(get_db)):
+async def get_trainings(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     return db.query(Training).all()
 
 @training_route.post("/")
-async def create_training(payload: TrainingSchema, token: str = Header(None), db:Session = Depends(get_db)):
+async def create_training(payload: TrainingSchema, token: str = Depends(oauth2_scheme), db:Session = Depends(get_db)):
     app_service.authMiddleware(token)
     training = Training(
         title = payload.title,
@@ -45,7 +46,7 @@ async def create_training(payload: TrainingSchema, token: str = Header(None), db
     return response
 
 @training_route.post("/assessment")
-async def submit_assessment(payload: AssessmentSchema, token: str = Header(None), db:Session = Depends(get_db)):
+async def submit_assessment(payload: AssessmentSchema, token: str = Depends(oauth2_scheme), db:Session = Depends(get_db)):
     employee_id = app_service.authMiddleware(token)
     assessment = Assesment(
         employee_id = employee_id,
@@ -74,7 +75,7 @@ async def submit_assessment(payload: AssessmentSchema, token: str = Header(None)
     return response
 
 @training_route.get("/assessment/score_card/{training_id}")
-async def submit_assessment(training_id: int, token: str = Header(None), db:Session = Depends(get_db)):
+async def submit_assessment(training_id: int, token: str = Depends(oauth2_scheme), db:Session = Depends(get_db)):
     employee_id = app_service.authMiddleware(token)
     answer_sheet = db.query(QuestionAnswer.question_id, QuestionAnswer.answer_id).filter(QuestionAnswer.employee_id == employee_id, QuestionAnswer.training_id == training_id).all()
     correct_answers = db.query(TrainingQuestion, QuestionOption.id).filter(QuestionOption.is_correct == 1, TrainingQuestion.training_id == training_id).all()

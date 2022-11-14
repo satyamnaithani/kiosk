@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Header
+from fastapi import APIRouter, Depends, HTTPException, status
 from config.db import get_db
 from models import Employee, Department, TrainingAssignee
 from schemas import EmployeeSchema, LoginSchema, Token, EmployeeUpdateSchema, AssignTrainingSchema
@@ -10,6 +10,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from typing import Union
 from datetime import datetime, timedelta
 from utils import app_service
+from utils.oauth2 import oauth2_scheme
 
 employee_route = APIRouter(
     prefix="/v1/employee",
@@ -23,17 +24,17 @@ employee_route = APIRouter(
 )
 
 @employee_route.get("/")
-async def get_employees(token: str = Header(None), db: Session = Depends(get_db)):
+async def get_employees(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     return db.query(Employee).all()
 
 @employee_route.get("/{id}")
-async def get_employee_details(id: int, token: str = Header(None), db: Session = Depends(get_db)):
+async def get_employee_details(id: int, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     return db.query(Employee).get(id)
 
 @employee_route.post("/")
-async def create_employee(employee: EmployeeSchema, token: str = Header(None), db: Session = Depends(get_db)):
+async def create_employee(employee: EmployeeSchema, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     employee_count = db.query(Employee).count()
     name = employee.name
@@ -61,7 +62,7 @@ async def create_employee(employee: EmployeeSchema, token: str = Header(None), d
     }
     return response
 @employee_route.patch("/{employee_id}")
-async def update_employee(employee_id: int, employee: EmployeeUpdateSchema, token: str = Header(None), db: Session = Depends(get_db)):
+async def update_employee(employee_id: int, employee: EmployeeUpdateSchema, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     app_service.authMiddleware((token))
     update_employee = {
         Employee.name: employee.name,
@@ -83,7 +84,7 @@ async def update_employee(employee_id: int, employee: EmployeeUpdateSchema, toke
     return response
 
 @employee_route.delete("/{employee_id}")
-async def delete_employee(employee_id: int, token: str = Header(None), db: Session = Depends(get_db)):
+async def delete_employee(employee_id: int, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     app_service.authMiddleware((token))
     db.query(Employee).filter(Employee.id == employee_id).delete()
     db.commit()
@@ -94,7 +95,7 @@ async def delete_employee(employee_id: int, token: str = Header(None), db: Sessi
     return response
 
 @employee_route.post("/assign_training")
-async def assign_training(payload: AssignTrainingSchema, token: str = Header(None), db: Session = Depends(get_db)):
+async def assign_training(payload: AssignTrainingSchema, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     employee_id = app_service.authMiddleware((token))
     for training_id in payload.trainings:
         assignee = TrainingAssignee(

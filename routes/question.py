@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends
 from config.db import get_db
 from models import Training, QuestionOption, TrainingQuestion
 from schemas import TrainingQuestionSchema
 from sqlmodel import Session
 from datetime import date, datetime
 from utils import app_service
+from utils.oauth2 import oauth2_scheme
 
 question_route = APIRouter(
     prefix="/v1/questions",
@@ -18,7 +19,7 @@ question_route = APIRouter(
 )
 
 @question_route.get("/{training_id}")
-async def get_questions(training_id: int, token: str = Header(None), db: Session = Depends(get_db)):
+async def get_questions(training_id: int, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     result = db.query(TrainingQuestion).filter(TrainingQuestion.training_id == training_id).all()
     if len(result) == 0:
@@ -47,7 +48,7 @@ async def get_questions(training_id: int, token: str = Header(None), db: Session
     return response
 
 @question_route.post("/")
-async def write_question(questions: TrainingQuestionSchema, token: str = Header(None), db: Session = Depends(get_db)):
+async def write_question(questions: TrainingQuestionSchema, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     training_id = questions.training_id
     for question in questions.questions:

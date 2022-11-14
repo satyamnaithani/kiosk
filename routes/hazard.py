@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Header
+from fastapi import APIRouter, Depends, HTTPException, status
 from config.db import get_db
 from models import Hazard
 from schemas import HazardSchema
 from sqlmodel import Session
 from datetime import date
 from utils import app_service
+from utils.oauth2 import oauth2_scheme
 
 hazard_route = APIRouter(
     prefix="/v1/hazards",
@@ -18,13 +19,13 @@ hazard_route = APIRouter(
 )
 
 @hazard_route.get("/")
-async def get_hazards(token: str = Header(None), db: Session = Depends(get_db)):
+async def get_hazards(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     return db.query(Hazard).all()
 
 
 @hazard_route.post("/")
-async def create_hazard(hazard: HazardSchema, token: str = Header(None), db: Session = Depends(get_db)):
+async def create_hazard(hazard: HazardSchema, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     employee_id = app_service.authMiddleware(token)
     x = Hazard(
         title = hazard.title,
