@@ -7,7 +7,6 @@ class Assesment(Base):
 
     id: Unicode = Column(BigInteger, primary_key=True, nullable=False)
     employee_id = Column(BigInteger, ForeignKey("employees.id"))
-    assessment_id = Column(BigInteger, ForeignKey("employee_assessments.id"))
     training_id = Column(BigInteger, ForeignKey("trainings.id"))
     status = Column(Boolean)
     score = Column(BigInteger)

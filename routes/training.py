@@ -50,6 +50,7 @@ async def submit_assessment(token: str, payload: AssessmentSchema, db:Session = 
     assessment = Assesment(
         employee_id = employee_id,
         training_id = payload.training_id,
+        status = True,
         created_at = date.today()
     )
     db.add(assessment)
