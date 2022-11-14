@@ -8,7 +8,6 @@ class Options(BaseModel):
 class Questions(BaseModel):
     question: str
     score: str
-    status: bool
     options: List[Options]
 
 class TrainingQuestionSchema(BaseModel):

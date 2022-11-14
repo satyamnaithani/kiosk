@@ -55,7 +55,7 @@ async def write_question(token: str, questions: TrainingQuestionSchema, db: Sess
             training_id = training_id,
             question = question.question,
             score = question.score,
-            status = question.status,
+            status = True,
             created_at = date.today(),
             updated_at = date.today()
         )
