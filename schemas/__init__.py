@@ -8,3 +8,4 @@ from schemas.employee import EmployeeUpdateSchema
 from schemas.hazard import HazardSchema
 from schemas.grievance import GrievanceSchema
 from schemas.employee import AssignTraining
+from schemas.department import DepartmentSchema

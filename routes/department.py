@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from config.db import get_db
 from models import Employee, Department
-from schemas import EmployeeSchema
+from schemas import EmployeeSchema, DepartmentSchema
 from sqlmodel import Session
 from datetime import date
 from datetime import datetime
@@ -25,4 +25,22 @@ async def get_departments(token: str, db: Session = Depends(get_db)):
     response = []
     for department in departments:
         response.append({"id": department.id, "name": department.name})
+    return response
+
+@department_route.post("/")
+async def create_department(token: str, payload: DepartmentSchema, db: Session = Depends(get_db)):
+    app_service.authMiddleware(token)
+    department = Department(
+        name = payload.name,
+        status = payload.status,
+        hod = payload.hod,
+        created_at = date.today(),
+        updated_at = date.today()
+    )
+    db.add(department)
+    db.commit()
+    response = {
+        status: 201,
+        message: "Department Created Succesfully"
+    }
     return response
