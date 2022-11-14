@@ -30,7 +30,6 @@ async def create_training(payload: TrainingSchema, token: str = Depends(oauth2_s
         title = payload.title,
         description = payload.description,
         status = payload.status,
-        min_pass_marks = payload.min_pass_marks,
         start_date = app_service.format_date(payload.start_date),
         end_date = app_service.format_date(payload.end_date),
         duration_window = payload.duration_window,

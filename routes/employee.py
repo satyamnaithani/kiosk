@@ -37,6 +37,7 @@ async def get_employee_details(id: int, token: str = Depends(oauth2_scheme), db:
 async def create_employee(employee: EmployeeSchema, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     employee_count = db.query(Employee).count()
+    # employee_exist = db.query(Employee).filter(Employee.email == employee.email)
     name = employee.name
     employee_code = (name[0] + name[len(name) - 1]).upper() + str(1000 + employee_count)
     x = Employee(
