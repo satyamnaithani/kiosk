@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Header
 from config.db import get_db
-from models import Employee, Department
-from schemas import EmployeeSchema, LoginSchema, Token, EmployeeUpdateSchema, AssignTraining
+from models import Employee, Department, TrainingAssignee
+from schemas import EmployeeSchema, LoginSchema, Token, EmployeeUpdateSchema, AssignTrainingSchema
 from sqlmodel import Session
 from datetime import date
 from passlib.context import CryptContext
@@ -94,10 +94,10 @@ async def delete_employee(employee_id: int, token: str = Header(None), db: Sessi
     return response
 
 @employee_route.post("/assign_training")
-async def assign_training(payload: AssignTraining, token: str = Header(None), db: Session = Depends(get_db)):
+async def assign_training(payload: AssignTrainingSchema, token: str = Header(None), db: Session = Depends(get_db)):
     employee_id = app_service.authMiddleware((token))
     for training_id in payload.trainings:
-        assignee = AssignTraining(
+        assignee = TrainingAssignee(
             employee_id = employee_id,
             training_id = training_id,
             assigned_on = date.today()

@@ -18,6 +18,6 @@ class EmployeeUpdateSchema(BaseModel):
     type: str
     is_hod: bool
 
-class AssignTraining(BaseModel):
+class AssignTrainingSchema(BaseModel):
     employee_id: int
     trainings: List[int]
