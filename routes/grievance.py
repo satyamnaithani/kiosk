@@ -19,13 +19,15 @@ grievance_route = APIRouter(
 )
 
 @grievance_route.get("/")
-async def get_hazards(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    app_service.authMiddleware(token)
-    return db.query(Grievance).all()
+async def get_grievance(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    employee = app_service.authMiddleware(token)
+    if employee.type == "admin":
+        return db.query(Grievance).all()
+    return db.query(Grievance).filter(Grievance.created_by == employee.id).all()
 
 
 @grievance_route.post("/")
-async def create_hazard(grievance: GrievanceSchema, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+async def create_grievance(grievance: GrievanceSchema, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     employee_id = app_service.authMiddleware(token)
     x = Grievance(
         title = grievance.title,

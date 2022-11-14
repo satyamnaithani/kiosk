@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from config.db import get_db
-from models import Hazard
+from models import Hazard, Employee
 from schemas import HazardSchema
 from sqlmodel import Session
 from datetime import date
@@ -20,8 +20,11 @@ hazard_route = APIRouter(
 
 @hazard_route.get("/")
 async def get_hazards(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    app_service.authMiddleware(token)
-    return db.query(Hazard).all()
+    employee_id = app_service.authMiddleware(token)
+    employee = db.query(Employee).get(employee_id)
+    if employee.is_hod:
+        return db.query(Hazard).filter(Hazard.department_id == employee.department_id).all()
+    return db.query(Hazard).filter(Hazard.created_by == employee.id).all()
 
 
 @hazard_route.post("/")
