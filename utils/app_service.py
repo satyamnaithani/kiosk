@@ -50,6 +50,6 @@ def authMiddleware(token):
         raise credentials_exception
 
 def format_date(date_str: str):
-    format_str = '%d-%m-%Y'
+    format_str = '%Y-%m-%d'
     formatted_date = datetime.strptime(date_str, format_str)
     return formatted_date
