@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Header
 from config.db import get_db
 from models import Grievance
 from schemas import GrievanceSchema
@@ -18,13 +18,13 @@ grievance_route = APIRouter(
 )
 
 @grievance_route.get("/")
-async def get_hazards(token: str, db: Session = Depends(get_db)):
+async def get_hazards(token: str = Header(None), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     return db.query(Grievance).all()
 
 
 @grievance_route.post("/")
-async def create_hazard(token: str, grievance: GrievanceSchema, db: Session = Depends(get_db)):
+async def create_hazard(grievance: GrievanceSchema, token: str = Header(None), db: Session = Depends(get_db)):
     employee_id = app_service.authMiddleware(token)
     x = Grievance(
         title = grievance.title,

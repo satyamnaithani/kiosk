@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Header
 from config.db import get_db
 from models import Employee, Department
 from schemas import EmployeeSchema, LoginSchema, Token, EmployeeUpdateSchema, AssignTraining
@@ -23,17 +23,17 @@ employee_route = APIRouter(
 )
 
 @employee_route.get("/")
-async def get_employees(token: str, db: Session = Depends(get_db)):
+async def get_employees(token: str = Header(None), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     return db.query(Employee).all()
 
 @employee_route.get("/{id}")
-async def get_employee_details(token: str, id: int, db: Session = Depends(get_db)):
+async def get_employee_details(id: int, token: str = Header(None), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     return db.query(Employee).get(id)
 
 @employee_route.post("/")
-async def create_employee(token: str, employee: EmployeeSchema, db: Session = Depends(get_db)):
+async def create_employee(employee: EmployeeSchema, token: str = Header(None), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     employee_count = db.query(Employee).count()
     name = employee.name
@@ -61,7 +61,7 @@ async def create_employee(token: str, employee: EmployeeSchema, db: Session = De
     }
     return response
 @employee_route.patch("/{employee_id}")
-async def update_employee(token: str, employee_id: int, employee: EmployeeUpdateSchema, db: Session = Depends(get_db)):
+async def update_employee(employee_id: int, employee: EmployeeUpdateSchema, token: str = Header(None), db: Session = Depends(get_db)):
     app_service.authMiddleware((token))
     update_employee = {
         Employee.name: employee.name,
@@ -83,7 +83,7 @@ async def update_employee(token: str, employee_id: int, employee: EmployeeUpdate
     return response
 
 @employee_route.delete("/{employee_id}")
-async def delete_employee(token: str, employee_id: int, db: Session = Depends(get_db)):
+async def delete_employee(employee_id: int, token: str = Header(None), db: Session = Depends(get_db)):
     app_service.authMiddleware((token))
     db.query(Employee).filter(Employee.id == employee_id).delete()
     db.commit()
@@ -94,7 +94,7 @@ async def delete_employee(token: str, employee_id: int, db: Session = Depends(ge
     return response
 
 @employee_route.post("/assign_training")
-async def assign_training(token: str, payload: AssignTraining, db: Session = Depends(get_db)):
+async def assign_training(payload: AssignTraining, token: str = Header(None), db: Session = Depends(get_db)):
     employee_id = app_service.authMiddleware((token))
     for training_id in payload.trainings:
         assignee = AssignTraining(

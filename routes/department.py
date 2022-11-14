@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Header
 from config.db import get_db
 from models import Employee, Department
 from schemas import EmployeeSchema, DepartmentSchema
@@ -19,7 +19,7 @@ department_route = APIRouter(
 )
 
 @department_route.get("/")
-async def get_departments(token: str, db: Session = Depends(get_db)):
+async def get_departments(token: str = Header(None), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     departments = db.query(Department).all()
     response = []
@@ -28,7 +28,7 @@ async def get_departments(token: str, db: Session = Depends(get_db)):
     return response
 
 @department_route.post("/")
-async def create_department(token: str, payload: DepartmentSchema, db: Session = Depends(get_db)):
+async def create_department(payload: DepartmentSchema, token: str = Header(None), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     department = Department(
         name = payload.name,

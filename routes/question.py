@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Header
 from config.db import get_db
 from models import Training, QuestionOption, TrainingQuestion
 from schemas import TrainingQuestionSchema
@@ -18,7 +18,7 @@ question_route = APIRouter(
 )
 
 @question_route.get("/{training_id}")
-async def get_questions(token: str, training_id: int, db: Session = Depends(get_db)):
+async def get_questions(training_id: int, token: str = Header(None), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     result = db.query(TrainingQuestion).filter(TrainingQuestion.training_id == training_id).all()
     if len(result) == 0:
@@ -47,7 +47,7 @@ async def get_questions(token: str, training_id: int, db: Session = Depends(get_
     return response
 
 @question_route.post("/")
-async def write_question(token: str, questions: TrainingQuestionSchema, db: Session = Depends(get_db)):
+async def write_question(questions: TrainingQuestionSchema, token: str = Header(None), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     training_id = questions.training_id
     for question in questions.questions:
@@ -76,4 +76,4 @@ async def write_question(token: str, questions: TrainingQuestionSchema, db: Sess
         "status": 201,
         "message": "Question Created Succesfully"
     }
-    return 
+    return response
