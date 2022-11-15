@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from config.db import get_db
 from models import Hazard, Employee
-from schemas import HazardSchema
+from schemas import HazardSchema, HazardCloseSchema
 from sqlmodel import Session
 from datetime import date
 from utils import app_service
@@ -45,5 +45,22 @@ async def create_hazard(hazard: HazardSchema, token: str = Depends(oauth2_scheme
     response = {
         "status": 201,
         "message": "Hazard Created Succesfully"
+    }
+    return response
+
+@hazard_route.patch("/{hazard_id}")
+async def close_hazard(hazard_id:int, hazard: HazardCloseSchema, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    employee_id = app_service.authMiddleware(token)
+    update_hazard = {
+        Hazard.status: hazard.status,
+        Hazard.hazard_feedback: hazard.hazard_feedback,
+        Hazard.closed_by: employee_id,
+        Hazard.closed_at: date.today()
+    }
+    db.query(Hazard).filter(Hazard.id == hazard_id).update(update_hazard)
+    db.commit()
+    response = {
+        "status": 200,
+        "message": "Hazard Updated Succesfully"
     }
     return response

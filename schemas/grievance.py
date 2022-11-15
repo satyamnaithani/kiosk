@@ -5,3 +5,7 @@ class GrievanceSchema(BaseModel):
     description: str
     status: str
     remarks: str
+
+class GrievanceCloseSchema(BaseModel):
+    status: str
+    grievance_feedback: str

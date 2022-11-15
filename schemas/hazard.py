@@ -7,3 +7,7 @@ class HazardSchema(BaseModel):
     department_id: int
     status: str
     remarks: str
+
+class HazardCloseSchema(BaseModel):
+    status: str
+    hazard_feedback: str

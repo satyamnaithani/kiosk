@@ -1,11 +1,9 @@
-from schemas.employee import EmployeeSchema
+from schemas.employee import EmployeeSchema, EmployeeUpdateSchema, AssignTrainingSchema
 from schemas.auth import LoginSchema
 from schemas.token import Token
 from schemas.training_question import TrainingQuestionSchema
 from schemas.training import TrainingSchema
 from schemas.assessment import AssessmentSchema
-from schemas.employee import EmployeeUpdateSchema
-from schemas.hazard import HazardSchema
-from schemas.grievance import GrievanceSchema
-from schemas.employee import AssignTrainingSchema
+from schemas.hazard import HazardSchema, HazardCloseSchema
+from schemas.grievance import GrievanceSchema, GrievanceCloseSchema
 from schemas.department import DepartmentSchema
