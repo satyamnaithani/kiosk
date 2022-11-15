@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from config.db import get_db
-from models import Grievance
+from models import Grievance, Employee
 from schemas import GrievanceSchema
 from sqlmodel import Session
 from datetime import date
@@ -20,7 +20,8 @@ grievance_route = APIRouter(
 
 @grievance_route.get("/")
 async def get_grievance(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    employee = app_service.authMiddleware(token)
+    employee_id = app_service.authMiddleware(token)
+    employee = db.query(Employee).get(employee_id)
     if employee.type == "admin":
         return db.query(Grievance).all()
     return db.query(Grievance).filter(Grievance.created_by == employee.id).all()
