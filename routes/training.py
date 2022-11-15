@@ -97,10 +97,7 @@ async def assigned_trainings(token: str = Depends(oauth2_scheme), db:Session = D
     else:
         trainings_response = []
         for training in trainings:
-            trainings_response.append({
-                "id": training.id,
-                "training": training.training
-            })
+            trainings_response.append(training.training)
     response = {
         "status": 200,
         "data": trainings_response
