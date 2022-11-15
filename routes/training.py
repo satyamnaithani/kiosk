@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from config.db import get_db
-from models import Training, QuestionAnswer, TrainingQuestion, QuestionOption, Assesment
+from models import Training, QuestionAnswer, TrainingQuestion, QuestionOption, Assesment, TrainingAssignee
 from schemas import TrainingSchema, AssessmentSchema
 from sqlmodel import Session
 from datetime import datetime, date
@@ -73,14 +73,36 @@ async def submit_assessment(payload: AssessmentSchema, token: str = Depends(oaut
     }
     return response
 
-@training_route.get("/assessment/score_card/{training_id}")
-async def submit_assessment(training_id: int, token: str = Depends(oauth2_scheme), db:Session = Depends(get_db)):
+# @training_route.get("/assessment/score_card/{training_id}")
+# async def submit_assessment(training_id: int, token: str = Depends(oauth2_scheme), db:Session = Depends(get_db)):
+#     employee_id = app_service.authMiddleware(token)
+#     answer_sheet = db.query(QuestionAnswer.question_id, QuestionAnswer.answer_id).filter(QuestionAnswer.employee_id == employee_id, QuestionAnswer.training_id == training_id).all()
+#     correct_answers = db.query(TrainingQuestion, QuestionOption.id).filter(QuestionOption.is_correct == 1, TrainingQuestion.training_id == training_id).all()
+#     response = {
+#         "status": 200,
+#         "message": answer_sheet,
+#         "hehe": correct_answers
+#     }
+#     return response
+
+@training_route.get("/assigned-trainings")
+async def assigned_trainings(token: str = Depends(oauth2_scheme), db:Session = Depends(get_db)):
     employee_id = app_service.authMiddleware(token)
-    answer_sheet = db.query(QuestionAnswer.question_id, QuestionAnswer.answer_id).filter(QuestionAnswer.employee_id == employee_id, QuestionAnswer.training_id == training_id).all()
-    correct_answers = db.query(TrainingQuestion, QuestionOption.id).filter(QuestionOption.is_correct == 1, TrainingQuestion.training_id == training_id).all()
+    trainings = db.query(TrainingAssignee).all()
+    if trainings == None:
+        response = {
+            "status": 404,
+            "message": "Trainings Not found"
+        }
+    else:
+        trainings_response = []
+        for training in trainings:
+            trainings_response.append({
+                "id": training.id,
+                "training": training.training
+            })
     response = {
         "status": 200,
-        "message": answer_sheet,
-        "hehe": correct_answers
+        "data": trainings_response
     }
     return response

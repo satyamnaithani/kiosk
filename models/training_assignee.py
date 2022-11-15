@@ -9,4 +9,6 @@ class TrainingAssignee(Base):
     training_id = Column(BigInteger, ForeignKey("trainings.id"))
     employee_id = Column(BigInteger, ForeignKey("employees.id"))
     assigned_on = Column(DATETIME, server_default=text("CURRENT_TIMESTAMP"))
+
+    training = relationship("Training")
     
