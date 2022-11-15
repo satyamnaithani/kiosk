@@ -84,7 +84,3 @@ async def write_question(questions: TrainingQuestionSchema, token: str = Depends
         "message": "Question Created Succesfully"
     }
     return response
-
-@question_route.get("/")
-async def test(training_id:int, db: Session = Depends(get_db)):
-    return db.query(TrainingAssignee).filter(TrainingAssignee.training_id == training_id).count()
