@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from config.db import get_db
-from models import Training, QuestionOption, TrainingQuestion
+from models import Training, QuestionOption, TrainingQuestion, TrainingAssignee
 from schemas import TrainingQuestionSchema
 from sqlmodel import Session
 from datetime import date, datetime
@@ -51,6 +51,12 @@ async def get_questions(training_id: int, token: str = Depends(oauth2_scheme), d
 async def write_question(questions: TrainingQuestionSchema, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     training_id = questions.training_id
+    assigned_training_count = db.query(TrainingAssignee).filter(TrainingAssignee.training_id == training_id).count()
+    if assigned_training_count > 0:
+        return {
+            "status": 405,
+            "message": "Can not assign question to this training. Training already assigned to employee."
+        }
     for question in questions.questions:
         x = TrainingQuestion(
             training_id = training_id,
@@ -78,3 +84,7 @@ async def write_question(questions: TrainingQuestionSchema, token: str = Depends
         "message": "Question Created Succesfully"
     }
     return response
+
+@question_route.get("/")
+async def test(training_id:int, db: Session = Depends(get_db)):
+    return db.query(TrainingAssignee).filter(TrainingAssignee.training_id == training_id).count()
