@@ -11,3 +11,6 @@ class Assesment(Base):
     status = Column(Boolean)
     score = Column(BigInteger)
     created_at = Column(DATETIME, server_default=text("CURRENT_TIMESTAMP"))
+
+    question_answers = relationship("QuestionAnswer")
+    training = relationship("Training")

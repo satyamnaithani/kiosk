@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from config.db import get_db
-from models import Employee, Department, TrainingAssignee
+from models import Employee, Department, TrainingAssignee, Assesment
 from schemas import EmployeeSchema, LoginSchema, Token, EmployeeUpdateSchema, AssignTrainingSchema
 from sqlmodel import Session
 from datetime import date
@@ -109,5 +109,27 @@ async def assign_training(payload: AssignTrainingSchema, token: str = Depends(oa
     response = {
         "status": 200,
         "message": "Training Assigned Succesfully"
+    }
+    return response
+
+@employee_route.get("/assessments/{employee_id}")
+async def fetch_assessments(employee_id: int, db: Session = Depends(get_db)):
+    assessments = db.query(Assesment).filter(Assesment.employee_id == employee_id).all()
+    if assessments == None:
+        return {
+            "status": 404,
+            "message": "assessment not found"
+        }
+    arr = []
+    for assessment in assessments:
+        arr.append({
+            "id": assessment.id,
+            "score": assessment.score,
+            "training": assessment.training.title,
+            "question_answers": assessment.question_answers
+        })
+    response = {
+        "status": 200,
+        "data": arr
     }
     return response
