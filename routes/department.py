@@ -40,7 +40,7 @@ async def create_department(payload: DepartmentSchema, token: str = Depends(oaut
     db.add(department)
     db.commit()
     response = {
-        status: 201,
-        message: "Department Created Succesfully"
+        "status": 201,
+        "message": "Department Created Succesfully"
     }
     return response
