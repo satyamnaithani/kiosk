@@ -22,6 +22,8 @@ hazard_route = APIRouter(
 async def get_hazards(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     employee_id = app_service.authMiddleware(token)
     employee = db.query(Employee).get(employee_id)
+    if employee.type == "admin" and not employee.is_hod: 
+        return db.query(Hazard).all()
     if employee.is_hod:
         return db.query(Hazard).filter(Hazard.department_id == employee.department_id).all()
     return db.query(Hazard).filter(Hazard.created_by == employee.id).all()
