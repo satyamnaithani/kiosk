@@ -34,7 +34,6 @@ async def create_department(payload: DepartmentSchema, token: str = Depends(oaut
     department = Department(
         name = payload.name,
         status = payload.status,
-        hod = payload.hod,
         created_at = date.today(),
         updated_at = date.today()
     )
