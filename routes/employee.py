@@ -11,6 +11,7 @@ from typing import Union
 from datetime import datetime, timedelta
 from utils import app_service
 from utils.oauth2 import oauth2_scheme
+from sqlalchemy import or_
 
 employee_route = APIRouter(
     prefix="/v1/employee",
@@ -36,8 +37,13 @@ async def get_employee_details(id: int, token: str = Depends(oauth2_scheme), db:
 @employee_route.post("/")
 async def create_employee(employee: EmployeeSchema, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
-    # employee_count = db.query(Employee).count()
-    # employee_exist = db.query(Employee).filter(Employee.email == employee.email)
+    employee_exist = db.query(Employee).filter(or_(Employee.email == employee.email, Employee.mobile == employee.mobile)).count()
+    if employee_exist != 0:
+        return {
+            "status": 405,
+            "message": "Employee with this email or number already exist"
+        }
+
     name = employee.name
     # employee_code = (name[0] + name[len(name) - 1]).upper() + str(1000 + employee_count)
     x = Employee(
