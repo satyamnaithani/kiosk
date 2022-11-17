@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from config.db import get_db
 from models import Training, QuestionOption, TrainingQuestion, TrainingAssignee
 from schemas import TrainingQuestionSchema
@@ -48,15 +48,13 @@ async def get_questions(training_id: int, token: str = Depends(oauth2_scheme), d
     return response
 
 @question_route.post("/")
-async def write_question(questions: TrainingQuestionSchema, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+async def write_question(questions: TrainingQuestionSchema, response: Response, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
     training_id = questions.training_id
     assigned_training_count = db.query(TrainingAssignee).filter(TrainingAssignee.training_id == training_id).count()
     if assigned_training_count > 0:
-        return {
-            "status": 405,
-            "message": "Can not assign question to this training. Training already assigned to employee."
-        }
+        raise HTTPException(status_code=405, detail="Can not assign question to this training. Training already assigned to employee.")
+        
     for question in questions.questions:
         x = TrainingQuestion(
             training_id = training_id,
@@ -79,8 +77,6 @@ async def write_question(questions: TrainingQuestionSchema, token: str = Depends
             questions.append(option)
         db.bulk_save_objects(questions)
     db.commit()
-    response = {
-        "status": 201,
-        "message": "Question Created Succesfully"
-    }
-    return response
+    response.status_code = status.HTTP_201_CREATED
+
+    return { "message": "Question Created Succesfully" }
