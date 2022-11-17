@@ -13,7 +13,7 @@ class Grievance(Base):
     created_at = Column(DATETIME, server_default=text("CURRENT_TIMESTAMP"))
     created_by = Column(BigInteger, ForeignKey("employees.id"))
     closed_at = Column(DATETIME)
-    closed_by = Column(BigInteger, ForeignKey("departments.hod"))
+    closed_by = Column(BigInteger, ForeignKey("employees.id"))
     remarks = Column(Unicode(255))
     grievance_feedback = Column(Unicode(255))
 

@@ -19,8 +19,8 @@ grievance_route = APIRouter(
 )
 
 @grievance_route.get("/")
-async def get_grievance(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    employee_id = app_service.authMiddleware(token)
+async def get_grievance( db: Session = Depends(get_db)):
+    employee_id = 12
     employee = db.query(Employee).get(employee_id)
     if employee.type == "admin":
         return db.query(Grievance).all()
@@ -28,8 +28,8 @@ async def get_grievance(token: str = Depends(oauth2_scheme), db: Session = Depen
 
 
 @grievance_route.post("/")
-async def create_grievance(grievance: GrievanceSchema, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    employee_id = app_service.authMiddleware(token)
+async def create_grievance(grievance: GrievanceSchema, db: Session = Depends(get_db)):
+    employee_id = 12
     x = Grievance(
         title = grievance.title,
         description = grievance.description,
@@ -49,6 +49,12 @@ async def create_grievance(grievance: GrievanceSchema, token: str = Depends(oaut
 @grievance_route.patch("/{grievance_id}")
 async def close_grievance(grievance_id:int, grievance: GrievanceCloseSchema, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     employee_id = app_service.authMiddleware(token)
+    employee = db.query(Employee).get(employee_id)
+    if employee.type != "admin":
+        return {
+            "status": 405,
+            "message": "Updation not allowed. Please login from admin account"
+        }
     update_grievance = {
         Grievance.status: grievance.status,
         Grievance.grievance_feedback: grievance.grievance_feedback,
