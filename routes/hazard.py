@@ -53,6 +53,12 @@ async def create_hazard(hazard: HazardSchema, token: str = Depends(oauth2_scheme
 @hazard_route.patch("/{hazard_id}")
 async def close_hazard(hazard_id:int, hazard: HazardCloseSchema, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     employee_id = app_service.authMiddleware(token)
+    employee = db.query(Employee).get(employee_id)
+    if employee.type != "admin":
+        return {
+            "status": 405,
+            "message": "Updation not allowed. Please login from admin account"
+        }
     update_hazard = {
         Hazard.status: hazard.status,
         Hazard.hazard_feedback: hazard.hazard_feedback,
