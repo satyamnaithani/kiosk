@@ -5,6 +5,7 @@ class EmployeeSchema(BaseModel):
     name: str
     department_id: int
     mobile: str
+    employee_code: str
     email: str
     password: str
     type: str
@@ -13,6 +14,7 @@ class EmployeeSchema(BaseModel):
 class EmployeeUpdateSchema(BaseModel):
     name: str
     department_id: int
+    employee_code: str
     mobile: str
     email: str
     type: str

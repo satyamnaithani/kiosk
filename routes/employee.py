@@ -36,12 +36,12 @@ async def get_employee_details(id: int, token: str = Depends(oauth2_scheme), db:
 @employee_route.post("/")
 async def create_employee(employee: EmployeeSchema, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     app_service.authMiddleware(token)
-    employee_count = db.query(Employee).count()
+    # employee_count = db.query(Employee).count()
     # employee_exist = db.query(Employee).filter(Employee.email == employee.email)
     name = employee.name
-    employee_code = (name[0] + name[len(name) - 1]).upper() + str(1000 + employee_count)
+    # employee_code = (name[0] + name[len(name) - 1]).upper() + str(1000 + employee_count)
     x = Employee(
-        employee_code = employee_code,
+        employee_code = employee.employee_code,
         name = name,
         department_id = employee.department_id,
         mobile = employee.mobile,
@@ -68,6 +68,7 @@ async def update_employee(employee_id: int, employee: EmployeeUpdateSchema, toke
     update_employee = {
         Employee.name: employee.name,
         Employee.department_id: employee.department_id,
+        Employee.employee_code: employee.employee_code,
         Employee.mobile: employee.mobile,
         Employee.email: employee.email,
         Employee.type: employee.type,
