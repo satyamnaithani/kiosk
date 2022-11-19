@@ -53,3 +53,15 @@ def format_date(date_str: str):
     format_str = '%Y-%m-%d'
     formatted_date = datetime.strptime(date_str, format_str)
     return formatted_date
+
+def getAssessmentRemarks(percent: int):
+    if percent > 80:
+        return "Excellent"
+    elif percent > 60 and percent <= 80:
+        return "Adequate"
+    elif percent > 40 and percent <=60:
+        return "Needs Improvement"
+    elif percent <= 40:
+        return "Inadequate"
+    else:
+        return ""

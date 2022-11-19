@@ -87,21 +87,25 @@ async def submit_assessment(training_id: int, token: str = Depends(oauth2_scheme
     return response
 
 @training_route.get("/results/{employee_id}")
-async def fetch_assessment_results(employee_id: int, token: str = Depends(oauth2_scheme), db:Session = Depends(get_db)):
-    app_service.authMiddleware(token)
+async def fetch_assessment_results(employee_id: int, db:Session = Depends(get_db)):
+    # app_service.authMiddleware(token)
     assessment_response = []
     assessments = db.query(Assesment).filter(Assesment.employee_id == employee_id).all()
     for assessment in assessments:
         question_answer_response = []
         total_score = 0
+        score_achieved = 0
         for question_answer in assessment.question_answers:
             option_arr = []
             for option in question_answer.question.options:
                 if question_answer.answer_id == option.id:
+                    score = int(question_answer.question.score)
+                    total_score += score
                     if option.is_correct:
-                        total_score += int(question_answer.question.score)
+                        score_achieved += score
                 option_arr.append({
                     "id": option.id,
+                    "option": option.question_option,
                     "is_correct": option.is_correct
                 })
             question_answer_response.append({
@@ -109,13 +113,19 @@ async def fetch_assessment_results(employee_id: int, token: str = Depends(oauth2
                 "answer_id": question_answer.answer_id,
                 "question": {
                     "id": question_answer.question.id,
+                    "name": question_answer.question.question,
                     "score": int(question_answer.question.score),
                     "options": option_arr
                 }
             })
+        score_achieved_percent = (score_achieved / total_score) * 100
+
         assessment_response.append({
             "id": assessment.id,
             "total_score": total_score,
+            "score_achieved": score_achieved,
+            "percentage": str(score_achieved_percent) + "%",
+            "remarks": app_service.getAssessmentRemarks(score_achieved_percent),
             "question_answers": question_answer_response,
             
         })
