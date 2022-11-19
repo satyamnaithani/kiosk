@@ -66,6 +66,7 @@ async def submit_assessment(payload: AssessmentSchema, token: str = Depends(oaut
         )
         answers.append(question_answer)
     db.bulk_save_objects(answers)
+    db.query(TrainingAssignee).filter(TrainingAssignee.employee_id == employee_id, TrainingAssignee.training_id == payload.training_id).update({TrainingAssignee.status: 'completed'})
     db.commit()
     response = {
         "status": 201,
