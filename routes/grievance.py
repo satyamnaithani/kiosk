@@ -19,17 +19,32 @@ grievance_route = APIRouter(
 )
 
 @grievance_route.get("/")
-async def get_grievance( db: Session = Depends(get_db)):
-    employee_id = 12
+async def get_grievance(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    employee_id = app_service.authMiddleware(token)
     employee = db.query(Employee).get(employee_id)
     if employee.type == "admin":
         return db.query(Grievance).all()
-    return db.query(Grievance).filter(Grievance.created_by == employee.id).all()
+    grievances = db.query(Grievance).filter(Grievance.created_by == employee.id).all()
+    grievance_response = []
+    for grievance in grievances:
+        grievance_response.append({
+            "id": grievance.id,
+            "title": grievance.title,
+            "description": grievance.description,
+            "status": grievance.status,
+            "created_at": grievance.created_at,
+            "created_by": grievance.created_by_employee.name,
+            "closed_at": grievance.closed_at,
+            "closed_by": grievance.closed_by_employee.name if grievance.closed_by_employee != None else None,
+            "remarks": grievance.remarks,
+            "grievance_feedback": grievance.grievance_feedback
+        })
+    return grievance_response
 
 
 @grievance_route.post("/")
-async def create_grievance(grievance: GrievanceSchema, db: Session = Depends(get_db)):
-    employee_id = 12
+async def create_grievance(grievance: GrievanceSchema, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    employee_id = app_service.authMiddleware(token)
     x = Grievance(
         title = grievance.title,
         description = grievance.description,

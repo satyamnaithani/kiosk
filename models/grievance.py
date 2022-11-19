@@ -17,4 +17,5 @@ class Grievance(Base):
     remarks = Column(Unicode(255))
     grievance_feedback = Column(Unicode(255))
 
-    
+    created_by_employee = relationship("Employee", foreign_keys=[created_by])
+    closed_by_employee = relationship("Employee", foreign_keys=[closed_by])
