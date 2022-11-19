@@ -25,9 +25,28 @@ employee_route = APIRouter(
 )
 
 @employee_route.get("/")
-async def get_employees(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    app_service.authMiddleware(token)
-    return db.query(Employee).order_by(Employee.updated_at.desc()).all()
+async def get_employees(db: Session = Depends(get_db)):
+    # app_service.authMiddleware(token)
+    employees = db.query(Employee).order_by(Employee.updated_at.desc()).all()
+    arr = []
+    for employee in employees:
+        print(employee.department)
+        arr.append({
+            "id": employee.id,
+            "employee_code": employee.employee_code,
+            "name": employee.name,
+            "department_id": employee.department_id,
+            "department": employee.department.name,
+            "mobile": employee.mobile,
+            "email": employee.email,
+            "password": employee.password,
+            "type": employee.type,
+            "is_hod": employee.is_hod,
+            "created_at": employee.created_at,
+            "updated_at": employee.updated_at,
+            
+        })
+    return arr
 
 @employee_route.get("/{id}")
 async def get_employee_details(id: int, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):

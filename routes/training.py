@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from config.db import get_db
-from models import Training, QuestionAnswer, TrainingQuestion, QuestionOption, Assesment, TrainingAssignee
+from models import Training, QuestionAnswer, TrainingQuestion, QuestionOption, Assesment, TrainingAssignee, Employee
 from schemas import TrainingSchema, AssessmentSchema
 from sqlmodel import Session
 from datetime import datetime, date
@@ -88,7 +88,7 @@ async def submit_assessment(payload: AssessmentSchema, token: str = Depends(oaut
 @training_route.get("/assigned-trainings")
 async def assigned_trainings(token: str = Depends(oauth2_scheme), db:Session = Depends(get_db)):
     employee_id = app_service.authMiddleware(token)
-    trainings = db.query(TrainingAssignee).all()
+    trainings = db.query(TrainingAssignee).filter(Employee.id == employee_id).all()
     if trainings == None:
         response = {
             "status": 404,
