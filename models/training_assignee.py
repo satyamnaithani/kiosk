@@ -8,6 +8,7 @@ class TrainingAssignee(Base):
     id: Unicode = Column(BigInteger, primary_key=True, nullable=False)
     training_id = Column(BigInteger, ForeignKey("trainings.id"))
     employee_id = Column(BigInteger, ForeignKey("employees.id"))
+    status = Column(Unicode(255))
     assigned_on = Column(DATETIME, server_default=text("CURRENT_TIMESTAMP"))
 
     training = relationship("Training")
