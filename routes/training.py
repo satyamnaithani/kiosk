@@ -87,8 +87,8 @@ async def submit_assessment(training_id: int, token: str = Depends(oauth2_scheme
     return response
 
 @training_route.get("/results/{employee_id}")
-async def fetch_assessment_results(token: str = Depends(oauth2_scheme), db:Session = Depends(get_db)):
-    employee_id = app_service.authMiddleware(token)
+async def fetch_assessment_results(employee_id: int, token: str = Depends(oauth2_scheme), db:Session = Depends(get_db)):
+    app_service.authMiddleware(token)
     assessment_response = []
     assessments = db.query(Assesment).filter(Assesment.employee_id == employee_id).all()
     for assessment in assessments:
