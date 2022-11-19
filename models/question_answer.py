@@ -11,3 +11,5 @@ class QuestionAnswer(Base):
     answer_id = Column(BigInteger, ForeignKey("question_options.id"))
     employee_id = Column(BigInteger, ForeignKey("employees.id"))
     assessment_id = Column(BigInteger, ForeignKey("employee_assessments.id"))
+
+    question = relationship("TrainingQuestion")
