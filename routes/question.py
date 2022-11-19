@@ -36,11 +36,11 @@ async def get_questions(training_id: int, token: str = Depends(oauth2_scheme), d
                 "id": op.id,
                 "option": op.question_option
             })
-        total_marks += ques.score
+        total_marks += int(ques.score)
         questions.append({
             "id": ques.id,
             "question": ques.question,
-            "score": ques.score,
+            "score": int(ques.score),
             "options": options,
         })
     response = {
