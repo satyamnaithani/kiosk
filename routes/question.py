@@ -28,6 +28,7 @@ async def get_questions(training_id: int, token: str = Depends(oauth2_scheme), d
             "message": "No Questions Found"
         }
     questions = []
+    total_marks = 0
     for ques in result:
         options = []
         for op in ques.options:
@@ -35,15 +36,18 @@ async def get_questions(training_id: int, token: str = Depends(oauth2_scheme), d
                 "id": op.id,
                 "option": op.question_option
             })
+        total_marks += ques.score
         questions.append({
             "id": ques.id,
             "question": ques.question,
+            "score": ques.score,
             "options": options,
         })
     response = {
         "training": ques.training.title,
         "duration_window": ques.training.duration_window,
-        "questions": questions
+        "questions": questions,
+        "total_marks": total_marks
     }
     return response
 
